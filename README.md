@@ -57,9 +57,42 @@ Blast consensus sequences against these dbs
 
 WGS is no longer a blast db, SRA section explained later
 
-Perform Blast 
-module load biology
-module load ncbi-blast
+### Running tblastn to Find KSs for the 8 BLAST Databases
+```
+module load biology 
+module load ncbi-blast 
 tblastn -query /scratch/groups/khosla/Orphan_PKS/KSSignatureConsensusPKSDB.fasta -db /scratch/groups/khosla/Orphan_PKS/blastdb/tsa_nt/tsa_nt -out KSSignature_tsa_nt.blastout.100000alignments.evalue100 -num_alignments 100000 -seg no -evalue 100
+```
 
 Repeat for the remaining 7 databases
+
+### Workaround for WGS: 
+For wgs need to use the workaround because there's just too much data on wgs to search all wgs since 2016 
+Workaround: ftp://ftp.hgc.jp/pub/mirror/ncbi/blast/WGS_TOOLS/README_BLASTWGS.txt <br />
+So basically, taxid2wgs gets an alias file of a list acessions that is recongized by tblastn_vdb
+tblastn_vdb it takes the list of accessions and tries to fetch the sra files from NCBI on the fly before running blast
+
+TaxID of Organisms that I am Interested in: <br />
+Archae: 2157 <br />
+Bacteria: 2 <br />
+Eukaryota: 2759 <br />
+
+To get the list of accessions: <br />
+```
+ml perl 
+cpanm install LWP::Protocol::https 
+cpanm install LWP::UserAgent 
+perl /scratch/groups/khosla/Orphan_PKS/blastdb/WGS/taxid2wgs.pl -title "Archaea WGS" -alias_file archaea-wgs 2157
+```
+
+Created a file called: archaea-wgs.nvl <br />
+Repeated for bacteria and eukaryota <br />
+
+### tblastn_vdb to Find KSs for the SRA WGS Sequences
+
+```
+/scratch/groups/khosla/Orphan_PKS/ncbi-blast-2.13.0+/bin/tblastn_vdb -query /scratch/groups/khosla/Orphan_PKS/KSSignatureConsensusPKSDB.fasta -db /scratch/groups/khosla/Orphan_PKS/blastdb/WGS/x00 -out x00_KSSignature_wgs_archaea.blastout.100000alignments.evalue100 -num_alignments 100000 -seg no -evalue 100
+```
+
+### Cluster KS
+

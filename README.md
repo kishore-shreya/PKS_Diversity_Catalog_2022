@@ -73,9 +73,9 @@ So basically, taxid2wgs gets an alias file of a list acessions that is recongize
 tblastn_vdb it takes the list of accessions and tries to fetch the sra files from NCBI on the fly before running blast
 
 TaxID of Organisms that I am Interested in: <br />
-Archae: 2157 <br />
-Bacteria: 2 <br />
-Eukaryota: 2759 <br />
+- Archae: 2157 <br />
+- Bacteria: 2 <br />
+- Eukaryota: 2759 <br />
 
 To get the list of accessions: <br />
 ```

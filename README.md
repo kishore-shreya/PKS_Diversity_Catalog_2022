@@ -389,14 +389,153 @@ clusterTableNonRedundantNonSimilarNonSequenceSimilar.alldbs.prot_len.correct_dom
 #########################################
 #########################################
 ### Known Cluster Finding:
+We want to extract PKS-containing clusters from MIBig, which wee consider as "known" clusters. <br />
+We then look through our data and try to find whch clusters correspond to these "known" ones. <br />
+We also want to look at cluster annotations, where some of them are moted as "known" clusters. <br />
+
+### Finding known PKS clusters in MIBig
+First, we look at MIBig 3.1 json files to extract all clusters: not only PKS, but also  NRPS, RiPPs etc. <br />
+We will match relevant clusters to our list of PKSs later.
+
+Download MiBIG Product Files from here: https://mibig.secondarymetabolites.org/download <br />
+Downloaded 3.1 JASON and GBK files to local computer <br />
 ```
+module load python/2.7.13
+module load biology py-biopython/1.70_py27
+module load math py-numpy
+python extracting_all_from_json_sk.py
 ```
+The output goes to: all_clusters_mibig.txt
+
+### Matching known clusters from MIBig to our list of clusters
 
 ```
+python finding_all_correspondencies_from_MIBig_sk.py 
 ```
+The result goes to: <br />
+known_all_clusters_from_MIBig.txt <br />
+There is a total of 339 clusters matched. <br />
+
+### Looking for clusters annotated as known 
+For some PKS clusters, their description mentions if they are known. We want to list known clusters matched to to clusters from the ClusterTable (before finding redundants)
 
 ```
+python finding_PKS_correspondencies_from_clusterTable_sk.py
 ```
+The result goes to: <br />
+known_clusters_from_clusterTable.txt <br />
+Some of them have to be manually modified, because it's difficult to correctly parse all product names. <br />
+
+The result goes to: <br />
+known_clusters_from_clusterTable_edited.txt <br />
+There is a total of 426 clusters identified this way. Some of them overlap with the list extracted from MIBig. <br />
+
+### Assembling the list of knowm clusters from both sources
 
 ```
+python assembling_correspondencies.py
+```
+The results go to: <br />
+known_clusters_MIBig_and_clusterTable.txt <br />
+There is a total of 508 known clusters. <br />
+Then I manually edit for typos etc. <br />
+The result goes to: # known_clusters_MIBig_and_clusterTable_edited.txt <br />
+
+### Matching this list to clusters that appear in the dendrogram (NRNS) 
+
+```
+module load python/2.7.13
+python matching_correspondencies_to_all_leaves_sk.py 
+```
+The result goes to: # known_clusters_MIBig_and_clusterTable_matched_to_all_leaves.txt <br />
+There is a total of 492 known clusters matched to clusters from the clusterTableNRNS. <br />
+
+### Matching this list to "main" clusters in the dendrogram (NRNSNSS)
+
+```
+module load python/2.7.13
+python matching_correspondencies_to_main_leaves_sk.py 
+```
+The result goes to: # known_clusters_MIBig_and_clusterTable_matched_to_main.txt <br />
+There is a total of 437 known clusters matched to clusters from the clusterTableNRNS. <br />
+
+### Making a timeline
+
+### ClusterTables for different years 
+```
+module load python/2.7.13
+module load math py-numpy
+cd /scratch/groups/khosla/Orphan_PKS/results/antismash_results/interesting_clusters/alldbs/Timeline/ClusterTablesTimeline
+python /scratch/groups/khosla/Orphan_PKS/scripts/making_clusterfiles_by_year_sk.py
+```
+
+### DistanceMatrices for different years 
+
+```
+sbatch creating_distance_matrices_example.sh
+```
+
+### ParsedScores for different years
+
+```
+module load python/2.7.13
+cd /scratch/groups/khosla/Orphan_PKS/results/antismash_results/interesting_clusters/alldbs/Timeline/ParsedScores
+sbatch generating_parsedscores.sh
+```
+Runs generating_parsedscore_by_year_sk.py
+
+### Looking for redundancies in scores and chaining for different years 
+
+```
+cd /scratch/groups/khosla/Orphan_PKS/results/antismash_results/interesting_clusters/alldbs/Timeline/ParsedScores
+sbatch chaining_1.sh  
+```
+runs chaining_blastp.pl
+
+### Making graphs for the number of non-redundant clusters, and the percentage of clusters with redundancies 
+
+```
+cd /scratch/groups/khosla/Orphan_PKS/results/antismash_results/interesting_clusters/alldbs/Timeline/ParsedScores
+sbatch creating_timeline.sh   (runs creating_timeline_sk.py)
+```
+The results go to: <br />
+timeline_unique_red.csv (numbers) <br />
+Timeline_unique_redundant_clusters.png (graph) (plots the number of unique clusters per year)<br />
+
+Opened the csv file in excel and used prism to plot the rediscovery rate i.e. number of redundant clusters divided by total number of clusters
+
+### Plotting the dendrogram 
+This python script takes the distance matrix file, the list of redundant and non-redundant clusters, and performs clustering only for distinct entries.  As in the 2013 paper,we are using the McQuitty method (also called "weighted" in scipy) for clustering. Clusters with redundancies are marked "seen more than once". This script shows names of known clusters and highlights them in red on the dendrogram of either all clusters, or distinc clusters.  The list of known distinct clusters is: known_clusters_MIBig_and_clusterTable_matched_to_main_edited.txt 
+
+
+```
+module load python/2.7.13
+module load biology py-biopython/1.70_py27
+module load math py-numpy
+ml math py-scipy
+ml math py-pandas
+ml math py-sympy
+ml viz py-matplotlib
+module load python/2.7.13
+python plotting_dendrograms_sk.py -show_all No -show_known Yes -only_show_known No -show_accession Yes -show_species Yes -show_date No -show_type Yes -show_domains No -color_known Yes
+```
+
+### How similar are orphan clusters from 2022 to known clusters?
+
+```
+cd /scratch/groups/khosla/Orphan_PKS/results/antismash_results/interesting_clusters/alldbs/Timeline/Similarity
+sbatch similarity_to_known_clusters.sh (runs similarity_to_known_clusters_sk.py)
+```
+
+### How similar are distinct orphan clusters from 2022 to distinct known clusters?
+
+```
+cd /scratch/groups/khosla/Orphan_PKS/results/antismash_results/interesting_clusters/alldbs/Timeline/Similarity
+sbatch similarity_to_known_clusters_distinct.sh (runs Similarity_to_known_clusters_distinct_sk.py)
+```
+
+### How similar are orphan clusters to known clusters, along the years?
+```
+cd /scratch/groups/khosla/Orphan_PKS/results/antismash_results/interesting_clusters/alldbs/Timeline/Similarity
+sbatch similarity_to_known_clusters_distinct_timeline.sh (runs similarity_to_known_clusters_distinct_timeline_sk.py)
 ```

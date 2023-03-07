@@ -378,7 +378,7 @@ This script reads all similarity scores and makes a distance matrix.
 perl /scratch/groups/khosla/Orphan_PKS/scripts/pairsToMatrix_blastp.pl /scratch/groups/khosla/Orphan_PKS/results/antismash_results/interesting_clusters/alldbs/prot_fasta_withClusterN_for_blastp_alldbs/parsed_scores/parsed_scores_alldbs /scratch/groups/khosla/Orphan_PKS/results/antismash_results/interesting_clusters/alldbs/clusterTableNonRedundantNonSimilar.alldbs.prot_len.correct_domains.txt> /scratch/groups/khosla/Orphan_PKS/results/antismash_results/interesting_clusters/alldbs/dataMatrix_alldbs_blastp.txt
 ```
 
-**16. Creating the catalog of NRNSNSS**
+***16. Creating the catalog of NRNSNSS***
 NOTE: In cases where a cluster that was deemed redundant to another main one, had identical clusters (=same sequence or same species+architecture), then these clusters were also added as redundant to the main cluster, into the last column.
 ```
 python /scratch/groups/khosla/Orphan_PKS/scripts/makeClusterTableSummaryNonSequenceSimilar_sk.py -cluster_tableNRNS /scratch/groups/khosla/Orphan_PKS/results/antismash_results/interesting_clusters/alldbs/clusterTableNonRedundantNonSimilar.alldbs.prot_len.correct_domains.txt -nonredundant_file /scratch/groups/khosla/Orphan_PKS/results/antismash_results/interesting_clusters/alldbs/prot_fasta_withClusterN_for_blastp_alldbs/parsed_scores/parsed_scores_alldbs.nonredundant_chained_new.cutoff0.9.txt -redundant_set_file /scratch/groups/khosla/Orphan_PKS/results/antismash_results/interesting_clusters/alldbs/prot_fasta_withClusterN_for_blastp_alldbs/parsed_scores/parsed_scores_alldbs.redundant_chained_new.cutoff0.9.txt -output_f /scratch/groups/khosla/Orphan_PKS/results/antismash_results/interesting_clusters/alldbs
@@ -386,6 +386,9 @@ python /scratch/groups/khosla/Orphan_PKS/scripts/makeClusterTableSummaryNonSeque
 The result goes to:
 clusterTableNonRedundantNonSimilarNonSequenceSimilar.alldbs.prot_len.correct_domains.txt
 
+#########################################
+#########################################
+### Known Cluster Finding:
 ```
 ```
 
